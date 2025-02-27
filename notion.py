@@ -67,4 +67,23 @@ def readValue(value):
         return value["title"][0]["plain_text"]
     return ""
 
+def setValue(dataType, value):
+    if dataType == "url":
+        return addURL(value)
+    if dataType == "phone_number":
+        return addPhone(value)
+    if dataType == "rich_text":
+        return addRichText(value)
+    if dataType == "select":
+        return addSelect(value)
+    if dataType == "multi_select":
+        return addMultiSelect(value)
+    if dataType == "email":
+        return addEmail(value)
+    if dataType == "title":
+        return addTitle(value)
+    if dataType == "date":
+        return addDate(value)
+    return ""
+
 

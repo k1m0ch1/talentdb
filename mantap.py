@@ -23,6 +23,7 @@ NOTION_HEADERS = {
         "Content-Type": "application/json",
         "Notion-Version": "2022-06-28"
         }
+
 basic = HTTPBasicAuth(TALENTDB_DB_USER, TALENTDB_DB_PASS)
 payload = { 
     #"limit": 3,
@@ -75,7 +76,7 @@ if r.status_code == 200:
                 else:
                     # if employee does not exist, create new record
                     data_payload = {
-                        "parent": {"database_id": TALENTDB_NOTION_DBID},
+                        "parent": {"database_id": NOTION_DBID},
                         "properties":{ }
                     }
                     NEWDATA = True
@@ -100,24 +101,9 @@ if r.status_code == 200:
                 for field_name, details in properties.items():
                     # print(f"{field_name}: {details.get('type')}")
                     if item[field_name] != None:
-                        if details.get('type') == "title":
-                            data_payload["properties"][field_name] = notion.addTitle(item[field_name])
-                        elif details.get('type') == "url":
-                            data_payload["properties"][field_name] = notion.addURL(item[field_name])
-                        elif details.get('type') == "phone_number":
-                            data_payload["properties"][field_name] = notion.addPhone(item[field_name])
-                        elif details.get('type') == "email":
-                            data_payload["properties"][field_name] = notion.addEmail(item[field_name])
-                        elif details.get('type') == "select":
-                            data_payload["properties"][field_name] = notion.addSelect(item[field_name])
-                        elif details.get('type') == "multi_select":
-                            data_payload["properties"][field_name] = notion.addMultiSelect(item[field_name])
-                        elif details.get('type') == "date":
-                            data_payload["properties"][field_name] = notion.addDate(item[field_name])
-                        elif details.get('type') == "rich_text":
-                            data_payload["properties"][field_name] = notion.addRichText(item[field_name])
-                        else:
-                            break
+                        data_payload["properties"][field_name] = notion.setValue(details.get('type'), item[field_name])
+                    else:
+                        break
 
             if NEWDATA:
                 reqData = requests.post(f"{TALENTDB_NOTION_APIURL}/pages", headers=NOTION_HEADERS, json=data_payload)
