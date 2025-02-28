@@ -1,5 +1,3 @@
-
-
 def addTitle(value):
     return {
         "title":[
@@ -15,7 +13,7 @@ def addSelect(value):
     }
 
 def addMultiSelect(value):
-    options = [{"name": opt.strip()} for opt in value.split(", ") if opt.strip()]
+    options = [{"name": opt.strip()} for opt in value.split(", ") if opt.strip()] if value is not None else ""
     return {
         "multi_select": options        
     }

@@ -32,7 +32,6 @@ payload = {
 
 TARGET_NOTIONDB = [TALENTDB_NOTION_PRIVATEDB_ID, TALENTDB_NOTION_PUBLICDB_ID]
 
-
 r = requests.get(f"{TALENTDB_DB_URL}/{TALENTDB_DB_SHEETNAME}",auth=basic, params=payload)
 
 if r.status_code == 200:
@@ -57,6 +56,17 @@ if r.status_code == 200:
 
         for NOTION_DBID in TARGET_NOTIONDB:
 
+            getProp = requests.get(f"{TALENTDB_NOTION_APIURL}/databases/{NOTION_DBID}", headers=NOTION_HEADERS)
+
+            properties = {}
+
+            if getProp.status_code == 200:
+                propData = getProp.json()
+                dbName = propData.get("title", [])
+                if dbName:
+                    dbName = dbName[0].get("text", {}).get("content", "Unkown Database")
+                properties = propData.get("properties", {})
+
             data_payload = {}
 
             search_req = requests.post(f"{TALENTDB_NOTION_APIURL}/databases/{NOTION_DBID}/query",
@@ -80,30 +90,18 @@ if r.status_code == 200:
                         "properties":{ }
                     }
                     NEWDATA = True
+            
+            if NEWDATA:
+                print(f"[+][{dbName}-{NOTION_DBID}] Record {item['Name']} is not exist, proceed to create a new record")
+            else:
+                print(f"[+][{dbName}-{NOTION_DBID}] Record {item['Name']} is already exist, proceed to update record")
 
-            getProp = requests.get(f"{TALENTDB_NOTION_APIURL}/databases/{NOTION_DBID}", headers=NOTION_HEADERS)
-
-            properties = {}
-
-            if getProp.status_code == 200:
-                propData = getProp.json()
-                dbName = propData.get("title", [])
-                if dbName:
-                    dbName = dbName[0].get("text", {}).get("content", "Unkown Database")
-
-                # just to be pretty, print here to know the status update or new record
-                if NEWDATA:
-                    print(f"[+][{dbName}-{NOTION_DBID}] Record {item['Name']} is not exist, proceed to create a new record")
+            for field_name, details in properties.items():
+                # print(f"{field_name}: {details.get('type')}")
+                if item[field_name] != None:
+                    data_payload["properties"][field_name] = notion.setValue(details.get('type'), item[field_name])
                 else:
-                    print(f"[+][{dbName}-{NOTION_DBID}] Record {item['Name']} is already exist, proceed to update record")
-
-                properties = propData.get("properties", {})
-                for field_name, details in properties.items():
-                    # print(f"{field_name}: {details.get('type')}")
-                    if item[field_name] != None:
-                        data_payload["properties"][field_name] = notion.setValue(details.get('type'), item[field_name])
-                    else:
-                        break
+                    break
 
             if NEWDATA:
                 reqData = requests.post(f"{TALENTDB_NOTION_APIURL}/pages", headers=NOTION_HEADERS, json=data_payload)
@@ -116,7 +114,7 @@ if r.status_code == 200:
                     print(updateData.text)
 
             # pause a second for easy rate limit handler
-            time.sleep(1)
+            time.sleep(1/2)
 else:
 
     print(r.status_code)
