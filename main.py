@@ -114,6 +114,20 @@ async def notion_record(session, notion_pages, talent, page_properties):
         if existing_hash == new_hash:
             print(f"Skipping unchanged record: {talent_name}")
             return
+
+        # skipping because incomplete
+        if talent['NIK'] == '#N/A':
+            print(f"Skipping {talent_name} because not exist in master data employee")
+            return
+        if talent['Job Specialization'] in ["", None] or talent['Skills'] in ["", None]:
+            print(f"Skipping {talent_name} because incomplete Profile")
+            return
+        if talent['is Show'] != "Eligible":
+            print(f"Skipping {talent_name} because Show status is {talent['is Show']}")
+            return
+        if talent['is Hired'] == "TRUE":
+            print(f"Skipping {talent_name} because already Hired")
+            return
         
         update_payload = {"properties": {}}
         
