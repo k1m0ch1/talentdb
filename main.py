@@ -119,7 +119,7 @@ async def notion_record(session, notion_pages, talent, page_properties):
         if talent['NIK'] == '#N/A':
             print(f"Skipping {talent_name} because not exist in master data employee")
             return
-        if talent['Job Specialization'] in ["", None] or talent['Skills'] in ["", None]:
+        if talent['Job Specialization'] in ["", "#N/A" ,None] or talent['Skills'] in ["", "#N/A", None]:
             print(f"Skipping {talent_name} because incomplete Profile")
             return
         if talent['is Show'] != "Eligible":

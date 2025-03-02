@@ -14,6 +14,7 @@ previously, it tooks 5000 second to proceed 740 data, and I change this with asy
 
 ## Question
 🧑 : Where can I see all the talent ?
+
 🐯 : you could see https://talentdb.notion.site
 
 
