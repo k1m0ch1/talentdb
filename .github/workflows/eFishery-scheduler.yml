@@ -1,4 +1,4 @@
-name: Update to Public DB
+name: eFishery Sync Data
 
 on:
   schedule:
@@ -16,7 +16,7 @@ on:
         - debug
 
 jobs:
-  Sync-Data:
+  eFishery-Sync-Data-Public:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -39,4 +39,28 @@ jobs:
           echo TALENTDB_NOTION_APIURL=${{ secrets.TALENTDB_NOTION_APIURL }} >> .env 
           echo TALENTDB_NOTION_DB_ID=${{ secrets.TALENTDB_PUBLICDB }} >> .env
       - name: Execute
-        run: python main.py
+        run: python main.py 
+  eFishery-Sync-Data-Recruiter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Create .env file
+        run: |
+          echo TALENTDB_DB_URL=${{ secrets.TALENTDB_DB_URL }} > .env 
+          echo TALENTDB_DB_SHEETNAME=${{ secrets.TALENTDB_DB_SHEETNAME }} >> .env 
+          echo TALENTDB_DB_USER=${{ secrets.TALENTDB_DB_USER }} >> .env 
+          echo TALENTDB_DB_PASS=${{ secrets.TALENTDB_DB_PASS }} >> .env 
+          echo TALENTDB_NOTION_APIKEY=${{ secrets.TALENTDB_NOTION_APIKEY }} >> .env 
+          echo TALENTDB_NOTION_APIURL=${{ secrets.TALENTDB_NOTION_APIURL }} >> .env 
+          echo TALENTDB_NOTION_DB_ID=${{ secrets.TALENTDB_RECRUITERDB }} >> .env
+      - name: Execute
+        run: python main.py 
