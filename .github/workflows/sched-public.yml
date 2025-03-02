@@ -6,7 +6,7 @@ on:
   workflow_dispatch: #manual trigger
 
 jobs:
-  run:
+  Sync-Data:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code:
