@@ -1,8 +1,17 @@
-name: eFishery Scheduler Sync Data
+name: eFishery Manual Sync Data
 
 on:
-  schedule:
-    - cron : '1 * * * *'
+  workflow_dispatch: #manual trigger
+    inputs:
+      logLevel:
+        description: 'Log level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+        - info
+        - warning
+        - debug
 
 jobs:
   eFishery-Sync-Data-Public:
